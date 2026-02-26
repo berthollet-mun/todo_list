@@ -214,17 +214,17 @@ class _HomePageState extends State<HomePage>
                                 child: Container(
                                   margin: const EdgeInsets.only(right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.15),
+                                    color: Colors.black.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                   child: TextField(
                                     controller: _searchController,
                                     onChanged: _filterTasks,
-                                    style: const TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.black),
                                     decoration: InputDecoration(
                                       hintText: 'Rechercher...',
                                       hintStyle: TextStyle(
-                                        color: Colors.white.withValues(
+                                        color: Colors.black.withValues(
                                           alpha: 0.7,
                                         ),
                                       ),
@@ -237,7 +237,7 @@ class _HomePageState extends State<HomePage>
                                       suffixIcon: IconButton(
                                         icon: const Icon(
                                           Icons.clear,
-                                          color: Colors.white,
+                                          color: Colors.black,
                                           size: 20,
                                         ),
                                         onPressed: _toggleSearch,
