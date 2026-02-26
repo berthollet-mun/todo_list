@@ -1,11 +1,28 @@
-import 'package:crud_sqlite/models/task.dart';
-import 'package:crud_sqlite/pages/edit_task_page.dart';
-import 'package:crud_sqlite/pages/profile_page.dart';
-import 'package:crud_sqlite/pages/task_form_page.dart';
-import 'package:crud_sqlite/services/auth_service.dart';
-import 'package:crud_sqlite/services/task_service.dart';
-import 'package:crud_sqlite/widgets/task_item.dart';
+import 'package:todo_list/models/task.dart';
+import 'package:todo_list/pages/edit_task_page.dart';
+import 'package:todo_list/pages/profile_page.dart';
+import 'package:todo_list/pages/task_form_page.dart';
+import 'package:todo_list/services/auth_service.dart';
+import 'package:todo_list/services/task_service.dart';
+import 'package:todo_list/widgets/task_item.dart';
 import 'package:flutter/material.dart';
+
+// Classe utilitaire pour le responsive
+class Responsive {
+  static bool isMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < 650;
+  static bool isTablet(BuildContext context) =>
+      MediaQuery.of(context).size.width >= 650 &&
+      MediaQuery.of(context).size.width < 1100;
+  static bool isDesktop(BuildContext context) =>
+      MediaQuery.of(context).size.width >= 1100;
+  static double maxContentWidth(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width >= 1100) return 1000;
+    if (width >= 650) return 600;
+    return width - 32;
+  }
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,11 +36,14 @@ class _HomePageState extends State<HomePage>
   final _authService = AuthService();
   final _taskService = TaskService();
   List<Task> _tasks = [];
+  List<Task> _filteredTasks = [];
   late TabController _tabController;
   int _currentTabIndex = 0;
   bool _isLoading = true;
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
-  final List _tabkTitles = ['Toutes', 'En cours', 'Terminées'];
   final List _emptyStateMessages = [
     'Aucune tâche',
     'Aucune tâche en cours',
@@ -42,11 +62,38 @@ class _HomePageState extends State<HomePage>
   void dispose() {
     super.dispose();
     _tabController.dispose();
+    _searchController.dispose();
   }
 
   void _handleTabSelection() {
     setState(() {
       _currentTabIndex = _tabController.index;
+    });
+    _loadTasks();
+  }
+
+  void _filterTasks(String query) {
+    setState(() {
+      _searchQuery = query;
+      if (query.isEmpty) {
+        _filteredTasks = _tasks;
+      } else {
+        _filteredTasks = _tasks.where((task) {
+          return task.title.toLowerCase().contains(query.toLowerCase()) ||
+              task.description.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      }
+    });
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchQuery = '';
+        _searchController.clear();
+        _filteredTasks = _tasks;
+      }
     });
   }
 
@@ -73,6 +120,16 @@ class _HomePageState extends State<HomePage>
 
       setState(() {
         _tasks = tasks;
+        _filteredTasks = _searchQuery.isEmpty
+            ? tasks
+            : tasks.where((task) {
+                return task.title.toLowerCase().contains(
+                      _searchQuery.toLowerCase(),
+                    ) ||
+                    task.description.toLowerCase().contains(
+                      _searchQuery.toLowerCase(),
+                    );
+              }).toList();
         _isLoading = false;
       });
     } else {
@@ -146,42 +203,94 @@ class _HomePageState extends State<HomePage>
               ),
               child: Column(
                 children: [
-                  // TITRE ET BOUTON PROFIL
+                  // TITRE ET BOUTONS
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Mes Tâches',
-                          style: TextStyle(
-                            fontSize: 24,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 4,
-                                offset: Offset(1, 1),
+                        _isSearching
+                            ? Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: TextField(
+                                    controller: _searchController,
+                                    onChanged: _filterTasks,
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      hintText: 'Rechercher...',
+                                      hintStyle: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.7,
+                                        ),
+                                      ),
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 12,
+                                          ),
+                                      suffixIcon: IconButton(
+                                        icon: const Icon(
+                                          Icons.clear,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                        onPressed: _toggleSearch,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                'Mes Tâches',
+                                style: TextStyle(
+                                  fontSize: Responsive.isMobile(context)
+                                      ? 20
+                                      : 24,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(1, 1),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfilePage(),
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: _toggleSearch,
+                              icon: Icon(
+                                _isSearching ? Icons.close : Icons.search,
+                                color: Colors.white,
+                                size: 26,
                               ),
-                            ).then((_) => _loadTasks());
-                          },
-                          icon: Icon(
-                            Icons.person,
-                            color: Colors.white,
-                            size: 26,
-                          ),
-                          tooltip: 'Profil',
+                              tooltip: 'Rechercher',
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ProfilePage(),
+                                  ),
+                                ).then((_) => _loadTasks());
+                              },
+                              icon: const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 26,
+                              ),
+                              tooltip: 'Profil',
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -237,7 +346,7 @@ class _HomePageState extends State<HomePage>
                   : RefreshIndicator(
                       onRefresh: _loadTasks,
                       color: Color(0xFF1976D2),
-                      child: _tasks.isEmpty
+                      child: _filteredTasks.isEmpty
                           ? SingleChildScrollView(
                               physics: AlwaysScrollableScrollPhysics(),
                               child: SizedBox(
@@ -319,11 +428,18 @@ class _HomePageState extends State<HomePage>
                                               ),
                                             ),
                                             child: Row(
-                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Icon(Icons.add, size: 20),
                                                 const SizedBox(width: 8),
-                                                Text('Créer une tâche'),
+                                                Flexible(
+                                                  child: Text(
+                                                    'Créer une tâche',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -334,12 +450,12 @@ class _HomePageState extends State<HomePage>
                               ),
                             )
                           : ListView.builder(
-                              padding: EdgeInsets.all(16),
-                              itemCount: _tasks.length,
+                              padding: const EdgeInsets.all(16),
+                              itemCount: _filteredTasks.length,
                               itemBuilder: (context, index) {
-                                final task = _tasks[index];
+                                final task = _filteredTasks[index];
                                 return Container(
-                                  margin: EdgeInsets.only(bottom: 12),
+                                  margin: const EdgeInsets.only(bottom: 12),
                                   child: TaskItem(
                                     task: task,
                                     onToggleCompletion: () =>

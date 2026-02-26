@@ -1,4 +1,4 @@
-import 'package:crud_sqlite/models/task.dart';
+import 'package:todo_list/models/task.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

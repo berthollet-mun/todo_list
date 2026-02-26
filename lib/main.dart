@@ -1,5 +1,7 @@
 // lib/main.dart
-import 'package:crud_sqlite/pages/login_page.dart';
+import 'package:todo_list/pages/home_page.dart';
+import 'package:todo_list/pages/login_page.dart';
+import 'package:todo_list/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,13 +15,61 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Task Manager',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Color(0xFF1976D2),
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: Color(0xFF1976D2),
-          secondary: Color(0xFF42A5F5),
+        useMaterial3: true,
+        primaryColor: const Color(0xFF1976D2),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1976D2),
+          brightness: Brightness.light,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.grey[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
         ),
       ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        primaryColor: const Color(0xFF1976D2),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1976D2),
+          brightness: Brightness.dark,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+      themeMode: ThemeMode.system,
       home: const SplashPage(),
     );
   }
@@ -38,7 +88,6 @@ class _SplashPageState extends State<SplashPage>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
-  final bool _showSplash = true;
 
   @override
   void initState() {
@@ -61,12 +110,18 @@ class _SplashPageState extends State<SplashPage>
 
     _controller.forward();
 
-    // Après 2 secondes, naviguer vers LoginPage
-    Future.delayed(const Duration(seconds: 2), () {
+    // Après 2 secondes, vérifier la session et naviguer
+    Future.delayed(const Duration(seconds: 2), () async {
       if (mounted) {
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+        final authService = AuthService();
+        final isLoggedIn = await authService.isLoggedIn();
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                isLoggedIn ? const HomePage() : const LoginPage(),
+          ),
+        );
       }
     });
   }
@@ -98,7 +153,7 @@ class _SplashPageState extends State<SplashPage>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF1976D2).withOpacity(0.3),
+                          color: Color(0xFF1976D2).withValues(alpha: 0.3),
                           blurRadius: 15,
                           spreadRadius: 2,
                         ),

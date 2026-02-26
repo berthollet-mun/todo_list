@@ -1,5 +1,5 @@
-import 'package:crud_sqlite/models/task.dart';
-import 'package:crud_sqlite/services/task_service.dart';
+import 'package:todo_list/models/task.dart';
+import 'package:todo_list/services/task_service.dart';
 import 'package:flutter/material.dart';
 
 class EditTaskPage extends StatefulWidget {
@@ -103,6 +103,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
@@ -206,7 +207,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
               // CARTE DE MODIFICATION
               Container(
-                padding: const EdgeInsets.all(25),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -300,9 +301,12 @@ class _EditTaskPageState extends State<EditTaskPage> {
                         hintText: 'Modifiez la description de la tâche',
                         hintStyle: TextStyle(color: Colors.grey[500]),
                         alignLabelWithHint: true,
-                        prefixIcon: Icon(
-                          Icons.description,
-                          color: Color(0xFF1976D2),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(bottom: 80),
+                          child: Icon(
+                            Icons.description,
+                            color: Color(0xFF1976D2),
+                          ),
                         ),
                         suffixIcon: _descriptionController.text.isNotEmpty
                             ? IconButton(
@@ -319,55 +323,52 @@ class _EditTaskPageState extends State<EditTaskPage> {
 
                     // DATE D'ÉCHÉANCE
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Color(0xFF1976D2).withOpacity(0.05),
+                        color: Color(0xFF1976D2).withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: Color(0xFF1976D2).withOpacity(0.2),
+                          color: Color(0xFF1976D2).withValues(alpha: 0.2),
                           width: 1,
                         ),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF1976D2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.calendar_today,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Date d\'échéance',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey[600],
-                                    ),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Color(0xFF1976D2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.calendar_today,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Date d\'échéance',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
                                   ),
-                                  Text(
-                                    '${_dueDate.day}/${_dueDate.month}/${_dueDate.year}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF1976D2),
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                ),
+                                Text(
+                                  '${_dueDate.day}/${_dueDate.month}/${_dueDate.year}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFF1976D2),
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () => _selectDate(context),
@@ -378,12 +379,17 @@ class _EditTaskPageState extends State<EditTaskPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               padding: EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 10,
+                                horizontal: 12,
+                                vertical: 8,
                               ),
                               elevation: 0,
+                              minimumSize: Size(0, 36),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: Text('Changer'),
+                            child: Text(
+                              'Changer',
+                              style: TextStyle(fontSize: 13),
+                            ),
                           ),
                         ],
                       ),
@@ -465,6 +471,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
                   ],
                 ),
               ),
+              // Bottom padding for keyboard
+              const SizedBox(height: 100),
             ],
           ),
         ),

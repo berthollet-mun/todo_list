@@ -1,6 +1,6 @@
-import 'package:crud_sqlite/models/user.dart';
-import 'package:crud_sqlite/pages/login_page.dart';
-import 'package:crud_sqlite/services/auth_service.dart';
+import 'package:todo_list/models/user.dart';
+import 'package:todo_list/pages/login_page.dart';
+import 'package:todo_list/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 /// Page de profil utilisateur
@@ -34,10 +34,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   /// Déconnexion de l'utilisateur
   Future<void> _logout() async {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
+    await _authService.clearUserSession(); // Effacer la session
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   @override

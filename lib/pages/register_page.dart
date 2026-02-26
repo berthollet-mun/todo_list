@@ -1,6 +1,6 @@
-import 'package:crud_sqlite/models/user.dart';
-import 'package:crud_sqlite/services/auth_service.dart';
-import 'package:crud_sqlite/widgets/custom_textfield.dart';
+import 'package:todo_list/models/user.dart';
+import 'package:todo_list/services/auth_service.dart';
+import 'package:todo_list/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -84,14 +84,19 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           child: Stack(
             children: [
-              // IMAGE DE FOND
+              // GRADIENT BACKGROUND
               Container(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/img4.png"),
-                    fit: BoxFit.cover,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1976D2),
+                      Color(0xFF42A5F5),
+                      Color(0xFF90CAF9),
+                    ],
                   ),
                 ),
               ),

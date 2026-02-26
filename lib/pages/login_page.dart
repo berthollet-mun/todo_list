@@ -1,7 +1,7 @@
-import 'package:crud_sqlite/pages/home_page.dart';
-import 'package:crud_sqlite/pages/register_page.dart';
-import 'package:crud_sqlite/services/auth_service.dart';
-import 'package:crud_sqlite/widgets/custom_textfield.dart';
+import 'package:todo_list/pages/home_page.dart';
+import 'package:todo_list/pages/register_page.dart';
+import 'package:todo_list/services/auth_service.dart';
+import 'package:todo_list/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -72,14 +72,19 @@ class _LoginPageState extends State<LoginPage> {
           ),
           child: Stack(
             children: [
-              // IMAGE DE FOND
+              // GRADIENT BACKGROUND
               Container(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/img4.png"),
-                    fit: BoxFit.cover,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1976D2),
+                      Color(0xFF42A5F5),
+                      Color(0xFF90CAF9),
+                    ],
                   ),
                 ),
               ),
@@ -180,10 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                             _isLoading
                                 ? const CircularProgressIndicator()
                                 : ElevatedButton(
-                                    onPressed: () {
-                                      onPressed:
-                                      _login();
-                                    },
+                                    onPressed: _login,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue[700],
                                       foregroundColor: Colors.white,

@@ -54,7 +54,7 @@ class DatabaseService {
   Future<void> close() async {
     if (_database != null) {
       await _database!.close();
-      _database!;
+      _database = null;
     }
   }
 }
